@@ -15,21 +15,23 @@ async function run() {
         const servicesCollection = client.db("servicess").collection("service")
 
         // info post from client
-        app.post('/addActivity', async (req, res) => {
-            const activity = req.body
-            if (!activity.name || !activity.email) {
-                return res.send({ status: '500', success: 'false', message: "Please Provide all information" })
+        app.post('/addGadget', async (req, res) => {
+            const gadget = req.body
+            console.log(gadget);
+
+            if (!gadget.name || !gadget.email || !gadget.image || !gadget.quantity || !gadget.price || !gadget.supplier) {
+                return res.send({ status: 400, success: false, error: "Please Provide all information" })
             }
-            const result = await servicesCollection.insertOne(activity)
-            res.send({ status: '400', success: 'true', message: `successfully booked ${activity.name}` })
+            const result = await servicesCollection.insertOne(gadget)
+            res.send({ status: 200, success: true, message: `successfully added ${gadget.name}` })
         })
 
         // all data send to client
-        app.get('/allactivities', async (req, res) => {
+        app.get('/gadgets', async (req, res) => {
             const query = {}
             const cursor = servicesCollection.find(query)
-            const allactivities = await cursor.toArray()
-            res.send(allactivities)
+            const gadgets = await cursor.toArray()
+            res.send(gadgets)
         })
 
         // singleActivity by id
