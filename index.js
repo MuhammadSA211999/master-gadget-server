@@ -10,14 +10,19 @@ const port = process.env.PORT || 5000
 
 const verifyToken = (req, res, next) => {
     const tokenWithBearer = req.headers.authorization
+    console.log('verify-tokrn', tokenWithBearer);
+
     if (!tokenWithBearer) {
         res.status(401).send({ success: false, error: 'unauthorized access' })
     }
     const secretToken = tokenWithBearer.split(' ')[1]
-    jwt.verify(secretToken, process.env.SECRET_TOKEN, (error, decoded) => {
-        if (error) {
-            res.status(403).send({ success: 0, message: 'forbidden access' })
+    console.log(secretToken);
+
+    jwt.verify(secretToken, process.env.SECRET_TOKEN, (err, decoded) => {
+        if (err) {
+            res.status(403).send({ success: false, message: 'forbidden access' })
         }
+        console.log(decoded);
         req.decoded = decoded
         next()
     })
@@ -35,6 +40,7 @@ async function run() {
             const email = req.body
             const secretToken = jwt.sign(email, process.env.SECRET_TOKEN, { expiresIn: '2d' })
             res.send({ secretToken })
+            console.log('secret token', secretToken);
             // res.status(200).send({data:secretToken,message:'successfully token make'})
         })
 
@@ -63,46 +69,77 @@ async function run() {
         app.get('/gadget/:id', async (req, res) => {
             const id = req.params.id
             const query = { _id: ObjectId(id) }
-            const activity = await servicesCollection.findOne(query)
-            res.send(activity)
+            const gadget = await servicesCollection.findOne(query)
+            res.send(gadget)
         })
 
-        //user activity delete
+        // delete gadget
         app.delete('/deleteGadget/:id', async (req, res) => {
             const id = req.params.id
             const query = { _id: ObjectId(id) }
             const result = await servicesCollection.deleteOne(query)
             res.send(result)
-            console.log(result.insertedId);
+            console.log(result);
         })
 
-        // user all items
-        app.get('/myGadgets', async (req, res) => {
+        // user all items with verification
+        app.get('/myGadgets', verifyToken, async (req, res) => {
             const email = req.query.email
-            // const tokenEmail = req.decoded.email
-            // if (tokenEmail === email) {
-            const query = { email: email }
-            const cursor = servicesCollection.find(query)
-            const result = await cursor.toArray()
-            res.send(result)
-            // }
+            const tokenEmail = req.decoded.email
+            if (tokenEmail === email) {
+                const query = { email: email }
+                const cursor = servicesCollection.find(query)
+                const result = await cursor.toArray()
+                res.send(result)
+            }
+            else {
+                res.send({ status: 403, success: false, message: 'Hello Russian man!' })
+            }
         })
-        // update a gadget
-        app.put('/updateGadget/id', async (req, res) => {
-            const gadgetInfo = req.body
-            const gadgetId = req.params.id
-            if (!gadgetId && (!gadgetInfo.name || !gadgetInfo.email || !gadgetInfo.price || !gadgetInfo.supplier)) {
-                return res.send({ success: false, result: 0, error: "Please gives necessary info correctly!" })
-            }
-            const filter = { _id: (ObjectId(id)) }
-            const option = { upsert: true }
-            const updateGadget = {
-                $set: { ...gadgetInfo }
-            }
-            const result = await servicesCollection.updateOne(filter, option, updateGadget)
-            res.send({ success: true, result: result, message: 'Well done!' })
 
+
+        // update a gadget
+        app.put('/updateGadget/:id', async (req, res) => {
+            const gadgetInfo = req.body
+            console.log(gadgetInfo);
+
+            const id = req.params.id
+            console.log(id);
+
+            if (!id && (!gadgetInfo.name || !gadgetInfo.price || !gadgetInfo.quantity || !gadgetInfo.image || !gadgetInfo.email)) {
+                return res.send({ success: false, error: "Please gives necessary info correctly!" })
+            }
+            const filter = { _id: ObjectId(id) }
+            const option = { upsert: true }
+            const updateDoc = {
+                $set: {
+                    name: gadgetInfo.name,
+                    image: gadgetInfo.image,
+                    email: gadgetInfo.email,
+                    quantity: gadgetInfo.quantity,
+                    price: gadgetInfo.price
+                }
+            }
+            const result = await servicesCollection.updateOne(filter, updateDoc, option)
+            res.send(result)
         })
+
+
+
+        // pagination
+        app.get("/gadgetsByPaging", async (req, res) => {
+            const limit = parseInt(req.query.limit);
+            const pageNumber = parseInt(req.query.pageNumber);
+            const count = await servicesCollection.estimatedDocumentCount();
+            const cursor = servicesCollection.find();
+            const gadgets = await cursor.skip(limit * pageNumber).limit(limit).toArray();
+            if (!gadgets?.length) {
+                return res.send({ success: false, error: "No product found" });
+            }
+
+            res.send({ success: true, data: gadgets, count: count })
+        })
+
 
     }
     finally {
