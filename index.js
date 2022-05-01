@@ -123,21 +123,23 @@ async function run() {
             const result = await servicesCollection.updateOne(filter, updateDoc, option)
             res.send(result)
         })
-
+        //    delivered one one
         app.put('/deliverUpdate/:id', async (req, res) => {
             const id = req.params.id
+            console.log(id);
+
             const newQuantity = req.body
             console.log(newQuantity);
 
-            // const filter = { _id: ObjectId(id) }
-            // const option = { upsert: true }
-            // const updateDoc = {
-            //     $set: {
-            //         quantity: newQuantity.deliver
-            //    }
-            // }
-            // const result=await servicesCollection.updateOne(filter,updateDoc,option)
-            // res.send(result)
+            const filter = { _id: ObjectId(id) }
+            const option = { upsert: true }
+            const updateDoc = {
+                $set: {
+                    quantity: newQuantity.deliver
+                }
+            }
+            const result = await servicesCollection.updateOne(filter, updateDoc, option)
+            res.send(result)
 
         })
 
