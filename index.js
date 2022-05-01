@@ -20,7 +20,7 @@ const verifyToken = (req, res, next) => {
 
     jwt.verify(secretToken, process.env.SECRET_TOKEN, (err, decoded) => {
         if (err) {
-            res.status(403).send({ success: false, message: 'forbidden access' })
+            return res.status(403).send({ success: false, message: 'forbidden access' })
         }
         console.log(decoded);
         req.decoded = decoded
@@ -93,7 +93,7 @@ async function run() {
                 res.send(result)
             }
             else {
-                res.send({ status: 403, success: false, message: 'Hello Russian man!' })
+                res.status(401).send({ success: false, message: 'Hello Russian man!' })
             }
         })
 
