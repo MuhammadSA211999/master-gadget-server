@@ -124,6 +124,25 @@ async function run() {
             res.send(result)
         })
         //    delivered one one
+        // app.put('/deliverUpdate/:id', async (req, res) => {
+        //     const id = req.params.id
+        //     console.log(id);
+
+        //     const newQuantity = req.body
+        //     console.log(newQuantity);
+
+        //     const filter = { _id: ObjectId(id) }
+        //     const option = { upsert: true }
+        //     const updateDoc = {
+        //         $set: {
+        //             quantity: newQuantity.deliver
+        //         }
+        //     }
+        //     const result = await servicesCollection.updateOne(filter, updateDoc, option)
+        //     res.send(result)
+
+        // })
+
         app.put('/deliverUpdate/:id', async (req, res) => {
             const id = req.params.id
             console.log(id);
@@ -136,6 +155,27 @@ async function run() {
             const updateDoc = {
                 $set: {
                     quantity: newQuantity.deliver
+                }
+            }
+            const result = await servicesCollection.updateOne(filter, updateDoc, option)
+            res.send(result)
+
+        })
+
+        // addUpdate one one
+
+        app.put('/addUpdate/:id', async (req, res) => {
+            const id = req.params.id
+            console.log(id);
+
+            const newQuantity = req.body
+            console.log(newQuantity);
+
+            const filter = { _id: ObjectId(id) }
+            const option = { upsert: true }
+            const updateDoc = {
+                $set: {
+                    quantity: newQuantity.deliver + 1
                 }
             }
             const result = await servicesCollection.updateOne(filter, updateDoc, option)
