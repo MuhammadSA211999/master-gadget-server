@@ -98,8 +98,8 @@ async function run() {
         })
 
 
-        // update a gadget
-        app.put('/updateGadget/:id', async (req, res) => {
+        // renew a gadget
+        app.put('/renewGadget/:id', async (req, res) => {
             const gadgetInfo = req.body
             console.log(gadgetInfo);
 
@@ -123,26 +123,7 @@ async function run() {
             const result = await servicesCollection.updateOne(filter, updateDoc, option)
             res.send(result)
         })
-        //    delivered one one
-        // app.put('/deliverUpdate/:id', async (req, res) => {
-        //     const id = req.params.id
-        //     console.log(id);
-
-        //     const newQuantity = req.body
-        //     console.log(newQuantity);
-
-        //     const filter = { _id: ObjectId(id) }
-        //     const option = { upsert: true }
-        //     const updateDoc = {
-        //         $set: {
-        //             quantity: newQuantity.deliver
-        //         }
-        //     }
-        //     const result = await servicesCollection.updateOne(filter, updateDoc, option)
-        //     res.send(result)
-
-        // })
-
+        //    delivered one one ***
         app.put('/deliverUpdate/:id', async (req, res) => {
             const id = req.params.id
             console.log(id);
@@ -154,7 +135,7 @@ async function run() {
             const option = { upsert: true }
             const updateDoc = {
                 $set: {
-                    quantity: newQuantity.deliver
+                    quantity: newQuantity.quantity - 1
                 }
             }
             const result = await servicesCollection.updateOne(filter, updateDoc, option)
@@ -162,20 +143,22 @@ async function run() {
 
         })
 
-        // addUpdate one one
 
-        app.put('/addUpdate/:id', async (req, res) => {
+
+
+        // addUpdate one one**
+
+        app.put('/restockGadget/:id', async (req, res) => {
             const id = req.params.id
             console.log(id);
 
             const newQuantity = req.body
             console.log(newQuantity);
-
             const filter = { _id: ObjectId(id) }
             const option = { upsert: true }
             const updateDoc = {
                 $set: {
-                    quantity: newQuantity.deliver + 1
+                    quantity: newQuantity.newQuantity
                 }
             }
             const result = await servicesCollection.updateOne(filter, updateDoc, option)
