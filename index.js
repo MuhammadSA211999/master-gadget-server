@@ -28,7 +28,7 @@ const verifyToken = (req, res, next) => {
     })
 }
 
-const uri = "mongodb+srv://muhammad-sa:eqDocytc6pHtyoIS@cluster0.jjaj9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.DB_PASSWORD}@cluster0.jjaj9.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 async function run() {
@@ -146,7 +146,7 @@ async function run() {
 
 
 
-        // addUpdate one one**
+        // addUpdat one one**
 
         app.put('/restockGadget/:id', async (req, res) => {
             const id = req.params.id
