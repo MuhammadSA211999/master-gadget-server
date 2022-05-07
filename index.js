@@ -123,7 +123,7 @@ async function run() {
             const result = await servicesCollection.updateOne(filter, updateDoc, option)
             res.send(result)
         })
-        //    delivered one one ***
+        //    delivered by one one ***
         app.put('/deliverUpdate/:id', async (req, res) => {
             const id = req.params.id
             console.log(id);
