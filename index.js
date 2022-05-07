@@ -146,7 +146,7 @@ async function run() {
 
 
 
-        // addUpdate one one**
+        // addUpdate by one one**
 
         app.put('/restockGadget/:id', async (req, res) => {
             const id = req.params.id
